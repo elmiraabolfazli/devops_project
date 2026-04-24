@@ -1,0 +1,63 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, master]
+
+jobs:
+  # ========== Job 1: Test ==========
+  test:
+    name: Test Go Backend
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+      
+      - name: Download dependencies
+        working-directory: ./backend
+        run: go mod download
+      
+      - name: Run tests
+        working-directory: ./backend
+        run: go test -v ./...
+      
+      - name: Build binary
+        working-directory: ./backend
+        run: go build -o main ./cmd/api
+
+  # ========== Job 2: Build and Push Images ==========
+  build-and-push:
+    name: Build and Push Docker Images
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Build and push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/devops-backend:latest
+      
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/devops-frontend:latest
