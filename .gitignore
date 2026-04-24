@@ -1,0 +1,9 @@
+# Binaries
+*.exe *.exe~ *.dll *.so *.dylib /bin/ /dist/
+*.test
+*.out
+vendor/
+.idea/ .vscode/ *.swp
+*.kubeconfig
+**/charts/*.tgz
+.env
