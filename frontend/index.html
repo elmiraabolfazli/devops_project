@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدیریت داده‌ها - پروژه DevOps</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 سامانه مدیریت داده‌ها</h1>
+            <p>پروژه یکپارچه DevOps با Go، Docker، Kubernetes و Helm</p>
+        </header>
+
+        <main>
+            <!-- بخش ایجاد داده جدید -->
+            <section class="card">
+                <h2>➕ ایجاد داده جدید</h2>
+                <form id="createForm">
+                    <div class="form-group">
+                        <label for="keyName">نام کلید:</label>
+                        <input type="text" id="keyName" placeholder="مثال: user:1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dataValue">مقدار داده:</label>
+                        <textarea id="dataValue" rows="3" placeholder="داده خود را به صورت JSON وارد کنید..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">ذخیره داده</button>
+                </form>
+                <div id="createResult" class="result"></div>
+            </section>
+
+            <!-- بخش نمایش همه داده‌ها -->
+            <section class="card">
+                <h2>📋 لیست داده‌ها</h2>
+                <button id="loadDataBtn" class="btn btn-secondary">بارگیری داده‌ها</button>
+                <div id="dataList" class="data-list"></div>
+            </section>
+
+            <!-- بخش بررسی سلامت سرویس -->
+            <section class="card">
+                <h2>🩺 وضعیت سرویس</h2>
+                <button id="healthCheckBtn" class="btn btn-info">بررسی سلامت</button>
+                <div id="healthStatus" class="health-status"></div>
+            </section>
+        </main>
+
+        <footer>
+            <p>پروژه DevOps | ساخته شده با Go، Redis، Kubernetes و Helm</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
