@@ -1,0 +1,61 @@
+replicaCount: 2
+
+backend:
+  name: backend
+  image:
+    repository: elmira382/devops-backend 
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+  env:
+    - name: PORT
+      value: "8080"
+    - name: REDIS_ADDR
+      value: "redis-service:6379"
+frontend:
+  name: frontend
+  image:
+    repository: elmira382/devops-frontend 
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: NodePort
+    port: 80
+    targetPort: 80
+    nodePort: 30080
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"
+redis:
+  name: redis
+  image:
+    repository: redis
+    tag: 7-alpine
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 6379
+    targetPort: 6379
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"
+  persistence:
+    enabled: false
