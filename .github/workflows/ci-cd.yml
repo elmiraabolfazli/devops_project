@@ -50,7 +50,7 @@ jobs:
       
       - name: Build and push Backend
         uses: docker/build-push-action@v5
-        
+        with:  # ← Fixed: missing "with:" keyword
           context: ./backend
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/devops-backend:latest
@@ -61,32 +61,34 @@ jobs:
           context: ./frontend
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/devops-frontend:latest
+  
+  # ========== Job 3: Test Helm Chart ==========
   helm-test:
-      name: Test Helm Chart
-      runs-on: ubuntu-latest
-      needs: build-and-push
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    name: Test Helm Chart
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
       
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4
-        
-        - name: Install Helm
-          uses: azure/setup-helm@v4
-          with:
-            version: v3.14.0
-        
-        - name: Update values.yaml with new image tag
-          run: |
-            sed -i "s|tag:.*|tag: ${{ github.sha }}|g" helm-chart/values.yaml
-            sed -i "s|repository:.*backend|repository: ${{ secrets.DOCKER_USERNAME }}/devops-backend|g" helm-chart/values.yaml
-            sed -i "s|repository:.*frontend|repository: ${{ secrets.DOCKER_USERNAME }}/devops-frontend|g" helm-chart/values.yaml
-        
-        - name: Helm Lint
-          run: helm lint ./helm-chart
-        
-        - name: Helm Template (Dry Run)
-          run: helm template devops-app ./helm-chart
-        
-        - name: Validate YAML syntax
-          run: helm template devops-app ./helm-chart | kubectl apply --dry-run=client -f -
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.0
+      
+      - name: Update values.yaml with new image tag
+        run: |
+          sed -i "s|tag:.*|tag: ${{ github.sha }}|g" helm-chart/values.yaml
+          sed -i "s|repository:.*backend|repository: ${{ secrets.DOCKER_USERNAME }}/devops-backend|g" helm-chart/values.yaml
+          sed -i "s|repository:.*frontend|repository: ${{ secrets.DOCKER_USERNAME }}/devops-frontend|g" helm-chart/values.yaml
+      
+      - name: Helm Lint
+        run: helm lint ./helm-chart
+      
+      - name: Helm Template (Dry Run)
+        run: helm template devops-app ./helm-chart
+      
+      - name: Validate YAML syntax
+        run: helm template devops-app ./helm-chart | kubectl apply --dry-run=client -f -
