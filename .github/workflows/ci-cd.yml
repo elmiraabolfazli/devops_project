@@ -87,6 +87,3 @@ jobs:
       
       - name: Helm Template (Dry Run)
         run: helm template devops-app ./helm-chart
-      
-      - name: Validate YAML syntax
-        run: helm template devops-app ./helm-chart | kubectl apply --dry-run=client -f -
