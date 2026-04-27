@@ -81,8 +81,6 @@ jobs:
       - name: Update values.yaml with new image tag
         run: |
           sed -i "s|tag:.*|tag: ${{ github.sha }}|g" helm-chart/values.yaml
-          sed -i "s|repository:.*backend|repository: ${{ secrets.DOCKER_USERNAME }}/devops-backend|g" helm-chart/values.yaml
-          sed -i "s|repository:.*frontend|repository: ${{ secrets.DOCKER_USERNAME }}/devops-frontend|g" helm-chart/values.yaml
       
       - name: Helm Lint
         run: helm lint ./helm-chart
